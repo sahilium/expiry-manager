@@ -1,8 +1,513 @@
-/*
+.expiry-dashboard {
+	padding: 1.5rem;
+	height: 100%;
+	overflow-y: auto;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.expiry-header {
+	margin-bottom: 1.5rem;
+}
 
-If your plugin does not need CSS, delete this file.
+.expiry-header-top {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
 
-*/
+.expiry-title {
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.expiry-view-tabs {
+	display: flex;
+	gap: 0.25rem;
+	background: var(--background-secondary);
+	border-radius: 8px;
+	padding: 0.25rem;
+}
+
+.expiry-view-tab {
+	background: none;
+	border: none;
+	padding: 0.4rem 0.8rem;
+	border-radius: 6px;
+	color: var(--text-muted);
+	cursor: pointer;
+	font-size: 0.85rem;
+	font-weight: 500;
+	transition: all 0.15s ease;
+}
+
+.expiry-view-tab:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.expiry-view-tab.active {
+	color: var(--text-normal);
+	background: var(--background-primary);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.expiry-add-btn {
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+.expiry-controls {
+	margin-bottom: 1rem;
+}
+
+.expiry-search {
+	width: 100%;
+	padding: 0.6rem 0.8rem;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 0.9rem;
+	margin-bottom: 0.6rem;
+	box-sizing: border-box;
+	transition: border-color 0.15s ease;
+}
+
+.expiry-search:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+}
+
+.expiry-filter-row {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.expiry-filter {
+	padding: 0.35rem 0.6rem;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 0.8rem;
+}
+
+.expiry-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+.expiry-stat {
+	background: var(--background-secondary);
+	border-radius: 10px;
+	padding: 0.75rem 1rem;
+	text-align: center;
+}
+
+.expiry-stat-value {
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-normal);
+}
+
+.expiry-stat-label {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	margin-top: 0.2rem;
+}
+
+.expiry-section {
+	margin-bottom: 1.5rem;
+}
+
+.expiry-section-title {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	margin: 0 0 0.75rem 0;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.expiry-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 0.75rem;
+}
+
+.expiry-card {
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 12px;
+	padding: 1rem;
+	transition: all 0.2s ease;
+}
+
+.expiry-card:hover {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	transform: translateY(-1px);
+}
+
+.expiry-card-top {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.expiry-card-icon {
+	font-size: 1.5rem;
+	flex-shrink: 0;
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.expiry-card-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.expiry-card-name {
+	font-weight: 600;
+	font-size: 0.95rem;
+	color: var(--text-normal);
+	margin-bottom: 0.25rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.expiry-card-meta {
+	display: flex;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+}
+
+.expiry-tag {
+	display: inline-block;
+	padding: 0.1rem 0.4rem;
+	border-radius: 4px;
+	font-size: 0.7rem;
+	font-weight: 500;
+	background: var(--background-secondary);
+	color: var(--text-muted);
+}
+
+.expiry-tag-provider {
+	background: var(--background-modifier-hover);
+}
+
+.expiry-progress-container {
+	margin-bottom: 0.6rem;
+}
+
+.expiry-progress-bg {
+	height: 6px;
+	background: var(--background-secondary);
+	border-radius: 3px;
+	overflow: hidden;
+	margin-bottom: 0.3rem;
+}
+
+.expiry-progress-fill {
+	height: 100%;
+	border-radius: 3px;
+	transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+.expiry-progress-label {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+}
+
+.expiry-card-details {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.expiry-card-expiry {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+
+.expiry-card-cost {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.expiry-badge {
+	display: inline-block;
+	padding: 0.1rem 0.4rem;
+	border-radius: 4px;
+	font-size: 0.65rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.expiry-badge-auto {
+	background: var(--color-green);
+	color: var(--text-on-accent);
+}
+
+.expiry-card-actions {
+	display: flex;
+	gap: 0.4rem;
+	justify-content: flex-end;
+}
+
+.expiry-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.35rem 0.75rem;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	font-weight: 500;
+}
+
+.expiry-btn:hover {
+	background: var(--background-modifier-hover);
+}
+
+.expiry-btn-primary {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.expiry-btn-primary:hover {
+	background: var(--interactive-accent-hover);
+}
+
+.expiry-btn-danger {
+	background: var(--color-red);
+	color: white;
+	border-color: var(--color-red);
+}
+
+.expiry-btn-danger:hover {
+	opacity: 0.9;
+}
+
+.expiry-btn-sm {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+}
+
+.expiry-btn-icon {
+	padding: 0.35rem 0.5rem;
+	font-size: 0.9rem;
+}
+
+/* Timeline view */
+
+.expiry-timeline {
+	padding: 0;
+}
+
+.expiry-timeline-group {
+	margin-bottom: 1.5rem;
+}
+
+.expiry-timeline-date {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.3rem;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.expiry-timeline-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 0.75rem;
+	border-radius: 8px;
+	transition: background 0.15s ease;
+}
+
+.expiry-timeline-item:hover {
+	background: var(--background-secondary);
+}
+
+.expiry-timeline-icon {
+	font-size: 1.1rem;
+	flex-shrink: 0;
+}
+
+.expiry-timeline-name {
+	flex: 1;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+.expiry-timeline-days {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+/* Calendar view */
+
+.expiry-calendar {
+	padding: 0;
+}
+
+.expiry-calendar-month {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+}
+
+.expiry-calendar-header {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
+	margin-bottom: 2px;
+}
+
+.expiry-calendar-day-header {
+	padding: 0.4rem;
+	text-align: center;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.expiry-calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
+}
+
+.expiry-calendar-day {
+	min-height: 80px;
+	padding: 0.3rem;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	font-size: 0.75rem;
+}
+
+.expiry-calendar-day.empty {
+	background: none;
+	border-color: transparent;
+}
+
+.expiry-calendar-day.today {
+	border-color: var(--interactive-accent);
+	background: var(--background-secondary);
+}
+
+.expiry-calendar-day.has-expiry {
+	background: var(--background-secondary);
+}
+
+.expiry-calendar-day-num {
+	font-weight: 600;
+	margin-bottom: 0.2rem;
+}
+
+.expiry-calendar-event {
+	font-size: 0.65rem;
+	padding: 0.1rem 0.2rem;
+	border-radius: 3px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.expiry-calendar-event:hover {
+	background: var(--background-modifier-hover);
+}
+
+/* Editor modal */
+
+.expiry-editor .modal-content {
+	padding: 1rem;
+}
+
+.expiry-template-picker {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.expiry-template-btn {
+	padding: 0.3rem 0.6rem;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.expiry-template-btn:hover {
+	background: var(--background-modifier-hover);
+}
+
+.expiry-template-btn.selected {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.expiry-editor-form {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.expiry-editor-form .setting-item {
+	border-bottom: 1px solid var(--background-modifier-border);
+	padding: 0.6rem 0;
+}
+
+.expiry-editor-buttons {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	padding-top: 1rem;
+	margin-top: 0.5rem;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.expiry-status {
+	font-size: 0.8rem;
+	padding: 0 0.5rem;
+}
+
+/* Expired state */
+.expiry-card.expired .expiry-card-name {
+	opacity: 0.6;
+}

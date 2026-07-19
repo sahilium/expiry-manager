@@ -1,114 +1,211 @@
-import {
-	Editor,
-	MarkdownView,
-	MarkdownFileInfo,
-	Modal,
-	Notice,
-	Plugin,
-} from 'obsidian';
-import {
-	DEFAULT_SETTINGS,
-	MyPluginSettings,
-	SampleSettingTab,
-} from './settings';
+import { Plugin, Notice, addIcon } from 'obsidian'
+import { VIEW_TYPE_EXPIRY, DEFAULT_SETTINGS } from './constants'
+import type { PluginSettings } from './types'
+import { Store } from './store'
+import { DashboardView } from './dashboard'
+import { EditorModal } from './editor-modal'
+import { NotificationService } from './notifications'
+import { ExpirySettingTab } from './settings'
+import { getTemplates, getTemplate, applyTemplate } from './templates'
+import { daysRemaining, todayStr } from './utils'
 
-// Remember to rename these classes and interfaces!
+const CALENDAR_CLOCK_ICON = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+  <line x1="16" y1="2" x2="16" y2="6"></line>
+  <line x1="8" y1="2" x2="8" y2="6"></line>
+  <line x1="3" y1="10" x2="21" y2="10"></line>
+  <circle cx="17" cy="16" r="3"></circle>
+  <polyline points="17 14 17 16 19 17"></polyline>
+</svg>
+`
 
-export default class MyPlugin extends Plugin {
-	settings!: MyPluginSettings;
+export default class ExpiryManagerPlugin extends Plugin {
+	settings!: PluginSettings
+	store!: Store
+	private notifications!: NotificationService
 
 	async onload() {
-		await this.loadSettings();
+		await this.loadPluginSettings()
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon('dice', 'Sample', (_evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
+		this.store = new Store(
+			this.app.vault,
+			this.app.metadataCache,
+			this.settings,
+		)
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status bar text');
+		await this.store.initialize()
 
-		// This adds a simple command that can be triggered anywhere
+		this.notifications = new NotificationService(this.store, this.settings)
+		this.notifications.start()
+
+		addIcon('calendar-clock', CALENDAR_CLOCK_ICON)
+
+		this.registerView(
+			VIEW_TYPE_EXPIRY,
+			(leaf) => new DashboardView(leaf, this.store, this.settings),
+		)
+
+		this.addRibbonIcon('calendar-clock', 'Expiry Manager', () => {
+			this.openDashboard()
+		})
+
+		const statusBarItem = this.addStatusBarItem()
+		statusBarItem.addClass('expiry-status')
+		this.updateStatusBar(statusBarItem)
+
+		this.store.onChange(() => {
+			this.updateStatusBar(statusBarItem)
+		})
+
 		this.addCommand({
-			id: 'open-modal-simple',
-			name: 'Open modal (simple)',
+			id: 'open-expiry-dashboard',
+			name: 'Open Expiry Manager dashboard',
+			callback: () => this.openDashboard(),
+		})
+
+		this.addCommand({
+			id: 'new-entry',
+			name: 'New expiry entry',
+			callback: () => this.openNewEntry(),
+		})
+
+		this.addCommand({
+			id: 'renew-entry',
+			name: 'Renew expiry entry',
 			callback: () => {
-				new SampleModal(this.app).open();
-			},
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'replace-selected',
-			name: 'Replace selected content',
-			editorCallback: (
-				editor: Editor,
-				_ctx: MarkdownView | MarkdownFileInfo,
-			) => {
-				editor.replaceSelection('Sample editor command');
-			},
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-modal-complex',
-			name: 'Open modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView =
-					this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
+				const entry = this.store.getActive()[0]
+				if (entry) {
+					this.renewEntry(entry.path)
+				} else {
+					new Notice('No active entries to renew')
 				}
-				return false;
 			},
-		});
+		})
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addCommand({
+			id: 'edit-entry',
+			name: 'Edit expiry entry',
+			callback: () => {
+				const entry = this.store.getActive()[0]
+				if (entry) {
+					this.editEntry(entry.path)
+				} else {
+					new Notice('No entries to edit')
+				}
+			},
+		})
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(activeDocument, 'click', (_evt: MouseEvent) => {
-			new Notice('Click');
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000),
-		);
+		this.addSettingTab(new ExpirySettingTab(this.app, this))
 	}
 
-	onunload() {}
+	onunload() {
+		this.notifications?.stop()
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_EXPIRY)
+	}
 
-	async loadSettings() {
+	async loadPluginSettings() {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			(await this.loadData()) as Partial<MyPluginSettings>,
-		);
+			(await this.loadData()) as Partial<PluginSettings>,
+		)
 	}
 
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText('Woah!');
+	async savePluginSettings() {
+		await this.saveData(this.settings)
 	}
 
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
+	private updateStatusBar(el: HTMLElement) {
+		const active = this.store.getActive()
+		const expired = this.store.getExpired()
+		const today = active.filter(({ asset }) => daysRemaining(asset.expiry) === 0)
+		const parts: string[] = [`${active.length} tracked`]
+		if (today.length > 0) parts.push(`${today.length} expiring today`)
+		if (expired.length > 0) parts.push(`${expired.length} expired`)
+		el.setText(`📅 ${parts.join(' · ')}`)
+	}
+
+	async openDashboard() {
+		const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_EXPIRY)
+		if (leaves.length > 0) {
+			this.app.workspace.revealLeaf(leaves[0]!)
+			return
+		}
+
+		const leaf = this.app.workspace.getLeaf('tab')
+		if (leaf) {
+			await leaf.setViewState({
+				type: VIEW_TYPE_EXPIRY,
+				active: true,
+			})
+			this.app.workspace.revealLeaf(leaf)
+		}
+	}
+
+	async openNewEntry(templateId?: string) {
+		const template = templateId
+			? getTemplate(templateId)
+			: getTemplate('blank')
+
+		const asset = template
+			? applyTemplate(template)
+			: {
+					name: '',
+					category: 'Custom',
+					start: todayStr(),
+					expiry: '',
+					reminders: [...this.settings.defaultReminders],
+					tags: [],
+					currency: this.settings.defaultCurrency,
+					createdAt: todayStr(),
+					updatedAt: todayStr(),
+				}
+
+		const modal = new EditorModal(
+			this.app,
+			asset,
+			async (saved) => {
+				if (!saved.name || !saved.expiry) {
+					new Notice('Name and expiry date are required')
+					return
+				}
+				await this.store.create(saved)
+				new Notice(`Created "${saved.name}"`)
+			},
+		)
+		modal.open()
+	}
+
+	async editEntry(path: string) {
+		const asset = this.store.getByPath(path)
+		if (!asset) {
+			new Notice('Entry not found')
+			return
+		}
+
+		const modal = new EditorModal(
+			this.app,
+			asset,
+			async (saved) => {
+				await this.store.update(path, saved)
+				new Notice(`Updated "${saved.name}"`)
+			},
+			async () => {
+				await this.store.delete(path)
+				new Notice('Entry deleted')
+			},
+		)
+		modal.open()
+	}
+
+	async renewEntry(path: string) {
+		const newPath = await this.store.renew(path)
+		if (newPath) {
+			const asset = this.store.getByPath(newPath)
+			new Notice(`Renewed "${asset?.name || 'entry'}"`)
+		} else {
+			new Notice('Could not renew entry')
+		}
 	}
 }

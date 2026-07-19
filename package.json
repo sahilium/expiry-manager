@@ -1,17 +1,17 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "expiry-manager",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Track anything that expires, renews, or needs periodic attention.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"dev": "bun esbuild.config.mjs",
+		"build": "bunx tsc --noEmit --skipLibCheck && bun esbuild.config.mjs production",
+		"version": "bun version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint ."
 	},
-	"keywords": [],
-	"license": "0-BSD",
+	"keywords": ["obsidian", "plugin", "expiry", "subscription", "manager"],
+	"license": "MIT",
 	"devDependencies": {
 		"@eslint/js": "^9.39.4",
 		"@types/node": "^22.15.17",
