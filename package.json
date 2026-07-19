@@ -1,6 +1,6 @@
 {
 	"name": "expiry-manager",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "Track anything that expires, renews, or needs periodic attention. Manage subscriptions, documents, licenses, and more from within Obsidian.",
 	"main": "main.js",
 	"type": "module",
