@@ -1,17 +1,34 @@
 {
 	"name": "expiry-manager",
 	"version": "1.0.0",
-	"description": "Track anything that expires, renews, or needs periodic attention.",
+	"description": "Track anything that expires, renews, or needs periodic attention. Manage subscriptions, documents, licenses, and more from within Obsidian.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {
-		"dev": "bun esbuild.config.mjs",
-		"build": "bunx tsc --noEmit --skipLibCheck && bun esbuild.config.mjs production",
-		"version": "bun version-bump.mjs && git add manifest.json versions.json",
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint ."
 	},
-	"keywords": ["obsidian", "plugin", "expiry", "subscription", "manager"],
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"expiry",
+		"expiry-manager",
+		"subscription",
+		"lifecycle",
+		"reminders"
+	],
 	"license": "MIT",
+	"author": "sahilium",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sahilium/expiry-manager"
+	},
+	"bugs": {
+		"url": "https://github.com/sahilium/expiry-manager/issues"
+	},
+	"homepage": "https://github.com/sahilium/expiry-manager",
 	"devDependencies": {
 		"@eslint/js": "^9.39.4",
 		"@types/node": "^22.15.17",

@@ -4,8 +4,8 @@
 	"version": "1.0.0",
 	"minAppVersion": "1.5.0",
 	"description": "Track anything that expires, renews, or needs periodic attention. Manage subscriptions, documents, licenses, and more.",
-	"author": "Expiry Manager",
-	"authorUrl": "",
-	"fundingUrl": "",
+	"author": "sahilium",
+	"authorUrl": "https://github.com/sahilium",
+	"fundingUrl": "https://github.com/sahilium/expiry-manager",
 	"isDesktopOnly": false
 }
