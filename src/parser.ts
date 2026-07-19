@@ -1,6 +1,11 @@
 import type { Asset } from './types'
 import { todayStr } from './utils'
 
+function toStr(v: unknown): string {
+	if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') return String(v)
+	return ''
+}
+
 function escapeYAML(val: string): string {
 	if (/[:#{}[\],&*?|<>!%@`"'-]/.test(val) || /^\s/.test(val) || /\s$/.test(val)) {
 		return `"${val.replace(/"/g, '\\"')}"`
@@ -60,7 +65,7 @@ export function parseAsset(content: string): Asset | null {
 	if (!match) return null
 
 	const frontmatter = match[1]!
-	const data: Record<string, any> = {}
+	const data: Record<string, unknown> = {}
 	const currentKey: string[] = []
 
 	for (const line of frontmatter.split('\n')) {
@@ -71,7 +76,7 @@ export function parseAsset(content: string): Asset | null {
 				data[key] = []
 			}
 			const parsed = parseScalar(val)
-			if (parsed !== null) (data[key] as any[]).push(parsed)
+			if (parsed !== null && Array.isArray(data[key])) (data[key] as unknown[]).push(parsed)
 			continue
 		}
 
@@ -99,23 +104,23 @@ export function parseAsset(content: string): Asset | null {
 	const notesContent = content.slice(match[0].length).trim()
 
 	return {
-		name: String(data.name),
-		icon: data.icon ? String(data.icon) : undefined,
-		category: String(data.category || 'Custom'),
-		provider: data.provider ? String(data.provider) : undefined,
-		start: String(data.start),
-		expiry: String(data.expiry),
-		cost: data.cost !== undefined ? Number(data.cost) : undefined,
-		currency: data.currency ? String(data.currency) : undefined,
+		name: toStr(data.name),
+		icon: data.icon ? toStr(data.icon) : undefined,
+		category: toStr(data.category) || 'Custom',
+		provider: data.provider ? toStr(data.provider) : undefined,
+		start: toStr(data.start),
+		expiry: toStr(data.expiry),
+		cost: data.cost !== undefined ? Number(toStr(data.cost)) : undefined,
+		currency: data.currency ? toStr(data.currency) : undefined,
 		autoRenew: data.autoRenew === true || data.autoRenew === 'true',
-		renewalPeriod: data.renewalPeriod !== undefined ? Number(data.renewalPeriod) : undefined,
+		renewalPeriod: data.renewalPeriod !== undefined ? Number(toStr(data.renewalPeriod)) : undefined,
 		reminders: Array.isArray(data.reminders) ? data.reminders.map(Number) : [],
 		tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
-		notes: data.notes ? String(data.notes) : notesContent || undefined,
+		notes: data.notes ? toStr(data.notes) : notesContent || undefined,
 		archived: data.archived === true || data.archived === 'true',
-		parentId: data.parentId ? String(data.parentId) : undefined,
-		createdAt: String(data.createdAt || todayStr()),
-		updatedAt: String(data.updatedAt || todayStr()),
+		parentId: data.parentId ? toStr(data.parentId) : undefined,
+		createdAt: toStr(data.createdAt) || todayStr(),
+		updatedAt: toStr(data.updatedAt) || todayStr(),
 	}
 }
 

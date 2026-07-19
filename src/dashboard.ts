@@ -11,12 +11,18 @@ import {
 	progressPercent,
 	fuzzySearch,
 	sortAssets,
-	daysBetween,
 } from './utils'
+
+export interface DashboardCallbacks {
+	onNewEntry: () => void
+	onEditEntry: (path: string) => void
+	onRenewEntry: (path: string) => void
+}
 
 export class DashboardView extends ItemView {
 	private store: Store
 	private settings: PluginSettings
+	private callbacks: DashboardCallbacks
 	private container!: HTMLElement
 	private filterState: FilterState = {}
 	private sortField: SortField = 'expiry'
@@ -24,10 +30,11 @@ export class DashboardView extends ItemView {
 	private viewMode: 'dashboard' | 'timeline' | 'calendar' = 'dashboard'
 	private unsub: (() => void) | null = null
 
-	constructor(leaf: WorkspaceLeaf, store: Store, settings: PluginSettings) {
+	constructor(leaf: WorkspaceLeaf, store: Store, settings: PluginSettings, callbacks: DashboardCallbacks) {
 		super(leaf)
 		this.store = store
 		this.settings = settings
+		this.callbacks = callbacks
 	}
 
 	getViewType(): string {
@@ -35,7 +42,7 @@ export class DashboardView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Expiry Manager'
+		return 'Expiry manager'
 	}
 
 	getIcon(): string {
@@ -79,7 +86,7 @@ export class DashboardView extends ItemView {
 		const titleRow = createElement('div', { className: 'expiry-header-top' })
 		const title = createElement('h1', {
 			className: 'expiry-title',
-			textContent: 'Expiry Manager',
+			textContent: 'Expiry manager',
 		})
 		titleRow.appendChild(title)
 
@@ -98,7 +105,9 @@ export class DashboardView extends ItemView {
 				textContent: v.label,
 			})
 			tab.addEventListener('click', () => {
-				this.viewMode = v.id as typeof this.viewMode
+				if (v.id === 'dashboard' || v.id === 'timeline' || v.id === 'calendar') {
+					this.viewMode = v.id
+				}
 				this.render()
 			})
 			viewTabs.appendChild(tab)
@@ -110,7 +119,7 @@ export class DashboardView extends ItemView {
 			textContent: '+ New Entry',
 		})
 		addBtn.addEventListener('click', () => {
-			;(this.app as any).commands.executeCommandById('expiry-manager:new-entry')
+			this.callbacks.onNewEntry()
 		})
 		titleRow.appendChild(addBtn)
 
@@ -122,7 +131,7 @@ export class DashboardView extends ItemView {
 			const searchInput = createElement('input', {
 				className: 'expiry-search',
 				placeholder: 'Search by name, provider, category, tags...',
-			}) as HTMLInputElement
+			})
 			searchInput.addEventListener('input', () => {
 				this.filterState.search = searchInput.value
 				this.renderDashboard()
@@ -131,7 +140,7 @@ export class DashboardView extends ItemView {
 
 			const filterRow = createElement('div', { className: 'expiry-filter-row' })
 
-			const categoryFilter = createElement('select', { className: 'expiry-filter' }) as HTMLSelectElement
+			const categoryFilter = createElement('select', { className: 'expiry-filter' })
 			const allOpt = createElement('option', { textContent: 'All Categories' })
 			allOpt.value = ''
 			categoryFilter.appendChild(allOpt)
@@ -148,7 +157,7 @@ export class DashboardView extends ItemView {
 			})
 			filterRow.appendChild(categoryFilter)
 
-			const expiredFilter = createElement('select', { className: 'expiry-filter' }) as HTMLSelectElement
+			const expiredFilter = createElement('select', { className: 'expiry-filter' })
 			const expiredOpts = [
 				{ label: 'All Status', value: '' },
 				{ label: 'Active', value: 'active' },
@@ -167,7 +176,7 @@ export class DashboardView extends ItemView {
 			})
 			filterRow.appendChild(expiredFilter)
 
-			const autoRenewFilter = createElement('select', { className: 'expiry-filter' }) as HTMLSelectElement
+			const autoRenewFilter = createElement('select', { className: 'expiry-filter' })
 			const autoOpts = [
 				{ label: 'All Renewal', value: '' },
 				{ label: 'Auto-Renew', value: 'auto' },
@@ -186,7 +195,7 @@ export class DashboardView extends ItemView {
 			})
 			filterRow.appendChild(autoRenewFilter)
 
-			const sortSelect = createElement('select', { className: 'expiry-filter' }) as HTMLSelectElement
+			const sortSelect = createElement('select', { className: 'expiry-filter' })
 			const sortOpts: { label: string; value: string }[] = [
 				{ label: 'Sort: Expiry', value: 'expiry' },
 				{ label: 'Sort: Name', value: 'name' },
@@ -279,13 +288,6 @@ export class DashboardView extends ItemView {
 		const sectionsContainer = createElement('div', { className: 'expiry-sections' })
 
 		const filtered = this.getFilteredAssets()
-
-		const now = new Date()
-		const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-		const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-		const weekLaterStr = `${weekLater.getFullYear()}-${String(weekLater.getMonth() + 1).padStart(2, '0')}-${String(weekLater.getDate()).padStart(2, '0')}`
-		const monthLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-		const monthLaterStr = `${monthLater.getFullYear()}-${String(monthLater.getMonth() + 1).padStart(2, '0')}-${String(monthLater.getDate()).padStart(2, '0')}`
 
 		const sections_data: { title: string; items: AssetFile[] }[] = [
 			{
@@ -460,9 +462,9 @@ export class DashboardView extends ItemView {
 			className: 'expiry-btn expiry-btn-sm',
 			textContent: 'Edit',
 		})
-		editBtn.addEventListener('click', (e: MouseEvent) => {
+		editBtn.addEventListener('click', (e) => {
 			e.stopPropagation()
-			;(this.app as any).commands.executeCommandById('expiry-manager:edit-entry', path)
+			this.callbacks.onEditEntry(path)
 		})
 		actions.appendChild(editBtn)
 
@@ -471,9 +473,9 @@ export class DashboardView extends ItemView {
 				className: 'expiry-btn expiry-btn-sm expiry-btn-primary',
 				textContent: 'Renew',
 			})
-			renewBtn.addEventListener('click', (e: MouseEvent) => {
+			renewBtn.addEventListener('click', (e) => {
 				e.stopPropagation()
-				;(this.app as any).commands.executeCommandById('expiry-manager:renew-entry', path)
+				this.callbacks.onRenewEntry(path)
 			})
 			actions.appendChild(renewBtn)
 		}

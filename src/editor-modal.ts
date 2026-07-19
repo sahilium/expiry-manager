@@ -1,5 +1,5 @@
 import { App, Modal, Setting } from 'obsidian'
-import type { Asset, Template } from './types'
+import type { Asset } from './types'
 import { CURRENCIES, DEFAULT_CATEGORIES } from './constants'
 import { getTemplates, applyTemplate } from './templates'
 import { createElement } from './utils'
@@ -69,7 +69,7 @@ export class EditorModal extends Modal {
 		}[] = [
 			{ id: 'name', label: 'Name', type: 'text', placeholder: 'e.g. ChatGPT Plus' },
 			{ id: 'icon', label: 'Icon / Emoji', type: 'text', placeholder: 'e.g. 💳' },
-			{ id: 'category', label: 'Category', type: 'select', options: [...DEFAULT_CATEGORIES] as unknown as string[] },
+			{ id: 'category', label: 'Category', type: 'select', options: [...DEFAULT_CATEGORIES] },
 			{ id: 'provider', label: 'Provider', type: 'text', placeholder: 'e.g. OpenAI' },
 			{ id: 'start', label: 'Start Date', type: 'date' },
 			{ id: 'expiry', label: 'Expiry Date', type: 'date' },
@@ -135,20 +135,20 @@ export class EditorModal extends Modal {
 			case 'text':
 				setting.addText(tc => {
 					tc.setPlaceholder(field.placeholder || '')
-					tc.inputEl.dataset.field = field.id as string
+					tc.inputEl.dataset.field = field.id
 				})
 				break
 			case 'number':
 				setting.addText(tc => {
 					tc.setPlaceholder(field.placeholder || '')
 					tc.inputEl.type = 'number'
-					tc.inputEl.dataset.field = field.id as string
+					tc.inputEl.dataset.field = field.id
 				})
 				break
 			case 'date':
 				setting.addText(tc => {
 					tc.inputEl.type = 'date'
-					tc.inputEl.dataset.field = field.id as string
+					tc.inputEl.dataset.field = field.id
 				})
 				break
 			case 'select':
@@ -156,24 +156,24 @@ export class EditorModal extends Modal {
 					for (const opt of field.options || []) {
 						dd.addOption(opt, opt)
 					}
-					dd.selectEl.dataset.field = field.id as string
+					dd.selectEl.dataset.field = field.id
 				})
 				break
 			case 'checkbox':
 				setting.addToggle(tg => {
 					tg.setTooltip(field.label)
-					;(tg as any).toggleEl.dataset.field = field.id as string
+					tg.toggleEl.dataset.field = field.id
 				})
 				break
 			case 'textarea':
 				setting.addTextArea(ta => {
 					ta.setPlaceholder(field.placeholder || '')
-					ta.inputEl.dataset.field = field.id as string
+					ta.inputEl.dataset.field = field.id
 				})
 				break
 			case 'tags':
 				setting.addText(tc => {
-					tc.setPlaceholder('e.g. ai, productivity')
+					tc.setPlaceholder('E.g. AI, productivity')
 					tc.inputEl.dataset.field = 'tags-input'
 				})
 				break

@@ -11,17 +11,33 @@ export class ExpirySettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
+		this.containerEl.empty()
+		this.buildSettings()
+	}
+
+	getSettingDefinitions(): { name: string; id: string; desc: string }[] {
+		return [
+			{ name: 'Storage folder', id: 'folder', desc: 'Folder where expiry entries are stored as Markdown notes' },
+			{ name: 'Default currency', id: 'defaultCurrency', desc: 'Default currency for cost fields' },
+			{ name: 'Default reminders', id: 'defaultReminders', desc: 'Days before expiry to show reminders' },
+			{ name: 'Show timeline view', id: 'showTimelineView', desc: 'Enable the timeline tab' },
+			{ name: 'Show calendar view', id: 'showCalendarView', desc: 'Enable the calendar tab' },
+			{ name: 'Show statistics', id: 'showStats', desc: 'Display statistics bar' },
+			{ name: 'Enable notifications', id: 'enabledNotifications', desc: 'Show Obsidian notifications' },
+			{ name: 'Notification offsets', id: 'notificationOffsets', desc: 'Days before expiry to trigger notifications' },
+		]
+	}
+
+	private buildSettings(): void {
 		const { containerEl } = this
 		containerEl.empty()
-
-		containerEl.createEl('h2', { text: 'Expiry Manager Settings' })
 
 		new Setting(containerEl)
 			.setName('Storage folder')
 			.setDesc('Folder where expiry entries are stored as Markdown notes')
 			.addText(text =>
 				text
-					.setPlaceholder('Expiry Manager')
+					.setPlaceholder('Expiry manager')
 					.setValue(this.plugin.settings.folder)
 					.onChange(async val => {
 						this.plugin.settings.folder = val || 'Expiry Manager'

@@ -2,8 +2,8 @@ import type { Asset, ProgressColor } from './types'
 import { PROGRESS_COLORS } from './constants'
 
 export function parseDate(dateStr: string): Date {
-	const [y, m, d] = dateStr.split('-').map(Number)
-	return new Date(y!, m! - 1, d!)
+	const parts = dateStr.split('-').map(Number)
+	return new Date(parts[0] ?? 0, (parts[1] ?? 1) - 1, parts[2] ?? 1)
 }
 
 export function todayStr(): string {
@@ -127,7 +127,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
 	attrs?: Partial<HTMLElementTagNameMap[K]>,
 	children?: (string | HTMLElement | null | undefined)[],
 ): HTMLElementTagNameMap[K] {
-	const el = document.createElement(tag)
+	const el = createEl(tag)
 	if (attrs) {
 		for (const [key, val] of Object.entries(attrs)) {
 			if (val !== undefined && val !== null) {
@@ -136,7 +136,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
 				} else if (key === 'textContent') {
 					el.textContent = val as string
 				} else {
-					(el as any)[key] = val
+					(el as Record<string, unknown>)[key] = val
 				}
 			}
 		}

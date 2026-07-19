@@ -1,3 +1,4 @@
+import { type App } from 'obsidian'
 import { type Asset, type AssetFile, type PluginSettings } from './types'
 import { parseAsset, assetToMarkdown } from './parser'
 import { slugify, todayStr, daysRemaining } from './utils'
@@ -8,15 +9,16 @@ export class Store {
 	private assets: Map<string, Asset> = new Map()
 	private listeners: Set<Listener> = new Set()
 	private settings: PluginSettings
-	private vault: any
-	private metadataCache: any
+	private app: App
 	private ready = false
 
-	constructor(vault: any, metadataCache: any, settings: PluginSettings) {
-		this.vault = vault
-		this.metadataCache = metadataCache
+	constructor(app: App, settings: PluginSettings) {
+		this.app = app
 		this.settings = settings
 	}
+
+	private get vault() { return this.app.vault }
+	private get metadataCache() { return this.app.metadataCache }
 
 	onChange(cb: Listener): () => void {
 		this.listeners.add(cb)
@@ -74,7 +76,9 @@ export class Store {
 
 		for (const filePath of paths) {
 			try {
-				const content = await this.vault.read(this.vault.getFileByPath(filePath))
+				const file = this.vault.getFileByPath(filePath)
+				if (!file) continue
+				const content = await this.vault.read(file)
 				const asset = parseAsset(content)
 				if (asset) {
 					newMap.set(filePath, asset)
@@ -190,7 +194,7 @@ export class Store {
 	async delete(filePath: string): Promise<void> {
 		const file = this.vault.getFileByPath(filePath)
 		if (file) {
-			await this.vault.delete(file)
+			await this.app.fileManager.trashFile(file)
 			this.assets.delete(filePath)
 			this.notify()
 		}

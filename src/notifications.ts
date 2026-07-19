@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian'
+import { Notice, type App } from 'obsidian'
 import type { Store } from './store'
 import type { PluginSettings } from './types'
 import { daysRemaining, todayStr } from './utils'
@@ -6,12 +6,14 @@ import { daysRemaining, todayStr } from './utils'
 const NOTIFIED_KEY = 'expiry-manager-notified'
 
 export class NotificationService {
+	private app: App
 	private store: Store
 	private settings: PluginSettings
 	private interval: number | null = null
 	private notified: Set<string> = new Set()
 
-	constructor(store: Store, settings: PluginSettings) {
+	constructor(app: App, store: Store, settings: PluginSettings) {
+		this.app = app
 		this.store = store
 		this.settings = settings
 		this.loadNotified()
@@ -19,18 +21,18 @@ export class NotificationService {
 
 	private loadNotified() {
 		try {
-			const saved = localStorage.getItem(NOTIFIED_KEY)
+			const saved = String(this.app.loadLocalStorage(NOTIFIED_KEY) ?? '')
 			if (saved) {
 				const arr = JSON.parse(saved) as string[]
 				this.notified = new Set(arr)
 			}
-		} catch {}
+		} catch { /* ignore */ }
 	}
 
 	private saveNotified() {
 		try {
-			localStorage.setItem(NOTIFIED_KEY, JSON.stringify([...this.notified]))
-		} catch {}
+			this.app.saveLocalStorage(NOTIFIED_KEY, JSON.stringify([...this.notified]))
+		} catch { /* ignore */ }
 	}
 
 	start() {
@@ -41,7 +43,7 @@ export class NotificationService {
 
 	stop() {
 		if (this.interval !== null) {
-			clearInterval(this.interval)
+			window.clearInterval(this.interval)
 			this.interval = null
 		}
 	}

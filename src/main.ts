@@ -6,7 +6,7 @@ import { DashboardView } from './dashboard'
 import { EditorModal } from './editor-modal'
 import { NotificationService } from './notifications'
 import { ExpirySettingTab } from './settings'
-import { getTemplates, getTemplate, applyTemplate } from './templates'
+import { getTemplate, applyTemplate } from './templates'
 import { daysRemaining, todayStr } from './utils'
 
 const CALENDAR_CLOCK_ICON = `
@@ -28,26 +28,26 @@ export default class ExpiryManagerPlugin extends Plugin {
 	async onload() {
 		await this.loadPluginSettings()
 
-		this.store = new Store(
-			this.app.vault,
-			this.app.metadataCache,
-			this.settings,
-		)
+		this.store = new Store(this.app, this.settings)
 
 		await this.store.initialize()
 
-		this.notifications = new NotificationService(this.store, this.settings)
+		this.notifications = new NotificationService(this.app, this.store, this.settings)
 		this.notifications.start()
 
 		addIcon('calendar-clock', CALENDAR_CLOCK_ICON)
 
 		this.registerView(
 			VIEW_TYPE_EXPIRY,
-			(leaf) => new DashboardView(leaf, this.store, this.settings),
+			(leaf) => new DashboardView(leaf, this.store, this.settings, {
+				onNewEntry: () => void this.openNewEntry(),
+				onEditEntry: (path) => void this.editEntry(path),
+				onRenewEntry: (path) => void this.renewEntry(path),
+			}),
 		)
 
-		this.addRibbonIcon('calendar-clock', 'Expiry Manager', () => {
-			this.openDashboard()
+		this.addRibbonIcon('calendar-clock', 'Expiry manager', () => {
+			void this.openDashboard()
 		})
 
 		const statusBarItem = this.addStatusBarItem()
@@ -60,8 +60,8 @@ export default class ExpiryManagerPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-expiry-dashboard',
-			name: 'Open Expiry Manager dashboard',
-			callback: () => this.openDashboard(),
+			name: 'Open dashboard',
+			callback: () => void this.openDashboard(),
 		})
 
 		this.addCommand({
@@ -76,7 +76,7 @@ export default class ExpiryManagerPlugin extends Plugin {
 			callback: () => {
 				const entry = this.store.getActive()[0]
 				if (entry) {
-					this.renewEntry(entry.path)
+					void this.renewEntry(entry.path)
 				} else {
 					new Notice('No active entries to renew')
 				}
@@ -89,7 +89,7 @@ export default class ExpiryManagerPlugin extends Plugin {
 			callback: () => {
 				const entry = this.store.getActive()[0]
 				if (entry) {
-					this.editEntry(entry.path)
+					void this.editEntry(entry.path)
 				} else {
 					new Notice('No entries to edit')
 				}
@@ -101,7 +101,6 @@ export default class ExpiryManagerPlugin extends Plugin {
 
 	onunload() {
 		this.notifications?.stop()
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_EXPIRY)
 	}
 
 	async loadPluginSettings() {
@@ -129,7 +128,9 @@ export default class ExpiryManagerPlugin extends Plugin {
 	async openDashboard() {
 		const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_EXPIRY)
 		if (leaves.length > 0) {
-			this.app.workspace.revealLeaf(leaves[0]!)
+			if (this.app.workspace.revealLeaf) {
+				void this.app.workspace.revealLeaf(leaves[0]!)
+			}
 			return
 		}
 
@@ -139,7 +140,9 @@ export default class ExpiryManagerPlugin extends Plugin {
 				type: VIEW_TYPE_EXPIRY,
 				active: true,
 			})
-			this.app.workspace.revealLeaf(leaf)
+			if (this.app.workspace.revealLeaf) {
+				void this.app.workspace.revealLeaf(leaf)
+			}
 		}
 	}
 
@@ -165,13 +168,12 @@ export default class ExpiryManagerPlugin extends Plugin {
 		const modal = new EditorModal(
 			this.app,
 			asset,
-			async (saved) => {
+			(saved) => {
 				if (!saved.name || !saved.expiry) {
 					new Notice('Name and expiry date are required')
 					return
 				}
-				await this.store.create(saved)
-				new Notice(`Created "${saved.name}"`)
+				void this.store.create(saved).then(() => new Notice(`Created "${saved.name}"`))
 			},
 		)
 		modal.open()
@@ -187,13 +189,11 @@ export default class ExpiryManagerPlugin extends Plugin {
 		const modal = new EditorModal(
 			this.app,
 			asset,
-			async (saved) => {
-				await this.store.update(path, saved)
-				new Notice(`Updated "${saved.name}"`)
+			(saved) => {
+				void this.store.update(path, saved).then(() => new Notice(`Updated "${saved.name}"`))
 			},
-			async () => {
-				await this.store.delete(path)
-				new Notice('Entry deleted')
+			() => {
+				void this.store.delete(path).then(() => new Notice('Entry deleted'))
 			},
 		)
 		modal.open()
