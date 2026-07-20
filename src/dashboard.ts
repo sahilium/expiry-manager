@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf } from 'obsidian'
 import type { AssetFile, FilterState, SortField, SortOrder, DashboardStats } from './types'
 import type { Store } from './store'
 import type { PluginSettings } from './types'
-import { VIEW_TYPE_EXPIRY } from './constants'
+import { VIEW_TYPE_EXPIRY, getCurrencySymbol } from './constants'
 import {
 	createElement,
 	daysRemaining,
@@ -90,6 +90,7 @@ export class DashboardView extends ItemView {
 		})
 		titleRow.appendChild(title)
 
+		const actionRow = createElement('div', { className: 'expiry-header-actions' })
 		const viewTabs = createElement('div', { className: 'expiry-view-tabs' })
 		const views: { id: string; label: string }[] = [
 			{ id: 'dashboard', label: 'Dashboard' },
@@ -112,8 +113,6 @@ export class DashboardView extends ItemView {
 			})
 			viewTabs.appendChild(tab)
 		}
-		titleRow.appendChild(viewTabs)
-
 		const addBtn = createElement('button', {
 			className: 'expiry-btn expiry-btn-primary expiry-add-btn',
 			textContent: '+ New Entry',
@@ -121,7 +120,10 @@ export class DashboardView extends ItemView {
 		addBtn.addEventListener('click', () => {
 			this.callbacks.onNewEntry()
 		})
-		titleRow.appendChild(addBtn)
+
+		actionRow.appendChild(viewTabs)
+		actionRow.appendChild(addBtn)
+		titleRow.appendChild(actionRow)
 
 		header.appendChild(titleRow)
 
@@ -344,8 +346,8 @@ export class DashboardView extends ItemView {
 			{ label: 'Expiring This Week', value: stats.expiringThisWeek },
 			{ label: 'Expired', value: stats.expired },
 			{ label: 'Auto-Renewing', value: stats.autoRenewing },
-			{ label: 'Monthly Spend', value: `$${stats.monthlySpend.toFixed(2)}` },
-			{ label: 'Annual Spend', value: `$${stats.yearlySpend.toFixed(2)}` },
+			{ label: 'Monthly Spend', value: `${getCurrencySymbol(this.settings.defaultCurrency)}${stats.monthlySpend.toFixed(2)}` },
+			{ label: 'Annual Spend', value: `${getCurrencySymbol(this.settings.defaultCurrency)}${stats.yearlySpend.toFixed(2)}` },
 			{ label: 'Avg Remaining', value: `${stats.averageRemaining}d` },
 		]
 
@@ -443,7 +445,7 @@ export class DashboardView extends ItemView {
 			details.appendChild(
 				createElement('span', {
 					className: 'expiry-card-cost',
-					textContent: `$${asset.cost}${asset.autoRenew ? '/mo' : ''}`,
+					textContent: `${getCurrencySymbol(asset.currency)}${asset.cost}${asset.autoRenew ? '/mo' : ''}`,
 				}),
 			)
 		}

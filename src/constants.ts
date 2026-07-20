@@ -1,3 +1,30 @@
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+	USD: '$',
+	EUR: '€',
+	GBP: '£',
+	INR: '₹',
+	JPY: '¥',
+	CAD: 'CA$',
+	AUD: 'A$',
+	BRL: 'R$',
+	SGD: 'S$',
+	MYR: 'RM',
+	CNY: '¥',
+	KRW: '₩',
+	CHF: 'CHF',
+	SEK: 'kr',
+	NOK: 'kr',
+	DKK: 'kr',
+	MXN: 'MX$',
+	TRY: '₺',
+	PLN: 'zł',
+}
+
+export function getCurrencySymbol(currency?: string): string {
+	if (currency && CURRENCY_SYMBOLS[currency]) return CURRENCY_SYMBOLS[currency]!
+	return currency || '$'
+}
+
 import type { PluginSettings, Template } from './types'
 
 export const VIEW_TYPE_EXPIRY = 'expiry-manager-view'
