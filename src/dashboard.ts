@@ -344,8 +344,8 @@ export class DashboardView extends ItemView {
 			{ label: 'Expiring This Week', value: stats.expiringThisWeek },
 			{ label: 'Expired', value: stats.expired },
 			{ label: 'Auto-Renewing', value: stats.autoRenewing },
-			{ label: 'Monthly Spend', value: `$${stats.monthlySpend}` },
-			{ label: 'Annual Spend', value: `$${stats.yearlySpend}` },
+			{ label: 'Monthly Spend', value: `$${stats.monthlySpend.toFixed(2)}` },
+			{ label: 'Annual Spend', value: `$${stats.yearlySpend.toFixed(2)}` },
 			{ label: 'Avg Remaining', value: `${stats.averageRemaining}d` },
 		]
 
