@@ -21,7 +21,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
 }
 
 export function getCurrencySymbol(currency?: string): string {
-	if (currency && CURRENCY_SYMBOLS[currency]) return CURRENCY_SYMBOLS[currency]!
+	if (currency && CURRENCY_SYMBOLS[currency]) return CURRENCY_SYMBOLS[currency]
 	return currency || '$'
 }
 
