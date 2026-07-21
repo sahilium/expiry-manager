@@ -1,7 +1,7 @@
 {
 	"id": "expiry-manager",
 	"name": "Expiry Manager",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"minAppVersion": "1.8.7",
 	"description": "Track anything that expires, renews, or needs periodic attention. Manage subscriptions, documents, licenses, and more.",
 	"author": "sahilium",
