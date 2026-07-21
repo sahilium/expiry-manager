@@ -7,6 +7,9 @@ function toStr(v: unknown): string {
 }
 
 function escapeYAML(val: string): string {
+	if (val.includes('\n')) {
+		return `|\n${val.split('\n').map(l => `  ${l}`).join('\n')}`
+	}
 	if (/[:#{}[\],&*?|<>!%@`"'-]/.test(val) || /^\s/.test(val) || /\s$/.test(val)) {
 		return `"${val.replace(/"/g, '\\"')}"`
 	}

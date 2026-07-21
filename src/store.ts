@@ -150,11 +150,19 @@ export class Store {
 		const archived: Asset = {
 			...existing,
 			archived: true,
-			notes: `Renewed on ${now}\n\n${existing.notes || ''}`,
+			notes: existing.notes
+				? `Renewed on ${now}\n\n${existing.notes}`
+				: `Renewed on ${now}`,
 			updatedAt: now,
 		}
 
-		await this.update(filePath, archived)
+		const archivePath = filePath.replace(/\.md$/, `--archived-${now}.md`)
+		const oldFile = this.vault.getFileByPath(filePath)
+		if (oldFile) {
+			await this.vault.rename(oldFile, archivePath)
+		}
+		this.assets.delete(filePath)
+		this.assets.set(archivePath, archived)
 
 		const renewed: Asset = {
 			...existing,
