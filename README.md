@@ -1,5 +1,14 @@
 # Expiry Manager
 
+[![Release](https://img.shields.io/github/v/release/sahilium/expiry-manager?style=flat-square)](https://github.com/sahilium/expiry-manager/releases)
+[![Downloads](https://img.shields.io/github/downloads/sahilium/expiry-manager/total?style=flat-square)](https://github.com/sahilium/expiry-manager/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/sahilium/expiry-manager/release.yml?style=flat-square&label=build)](https://github.com/sahilium/expiry-manager/actions)
+[![Lint](https://img.shields.io/github/actions/workflow/status/sahilium/expiry-manager/lint.yml?style=flat-square&label=lint)](https://github.com/sahilium/expiry-manager/actions)
+[![Tests](https://img.shields.io/github/actions/workflow/status/sahilium/expiry-manager/test.yml?style=flat-square&label=tests)](https://github.com/sahilium/expiry-manager/actions)
+[![Codecov](https://img.shields.io/codecov/c/github/sahilium/expiry-manager?style=flat-square)](https://codecov.io/gh/sahilium/expiry-manager)
+[![License](https://img.shields.io/github/license/sahilium/expiry-manager?style=flat-square)](LICENSE)
+[![Obsidian](https://img.shields.io/badge/Obsidian-Plugin-8A2BE2?style=flat-square)](https://obsidian.md)
+
 Never forget another renewal.
 
 **Expiry Manager** helps you track anything that expires, renews, or needs periodic attention directly inside your Obsidian vault.
@@ -316,9 +325,9 @@ npm run build
 
 # Contributing
 
-Bug reports, feature requests, and pull requests are always welcome.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, code style, and PR guidelines.
 
-If you find Expiry Manager useful, consider starring the repository.
+Bug reports, feature requests, and pull requests are always welcome.
 
 ---
 
