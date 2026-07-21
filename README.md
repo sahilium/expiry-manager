@@ -1,82 +1,327 @@
 # Expiry Manager
 
-Track anything that expires, renews, or needs periodic attention — subscriptions, documents, licenses, domains, certificates, warranties, and more.
+Never forget another renewal.
 
-All data is stored as plain Markdown notes with YAML frontmatter in a configurable folder. No proprietary database, no lock-in.
+**Expiry Manager** helps you track anything that expires, renews, or needs periodic attention directly inside your Obsidian vault.
 
-## Features
+Whether it's a domain, passport, subscription, SSL certificate, phone recharge, warranty, or API key, Expiry Manager keeps everything in one place with reminders, progress tracking, and renewal history.
 
-- **Dashboard** — compact cards with progress bars, days remaining, cost, and quick actions
-- **Sections** — Expiring Today, This Week, This Month, Upcoming, Expired, Auto-Renewing
-- **Timeline view** — chronological list of upcoming expiry
-- **Calendar view** — monthly calendar showing expiry dates
-- **Smart Renewal** — archive the current period and create the next cycle automatically
-- **Notifications** — Obsidian-native notifications at configurable offsets
-- **Templates** — pre-filled forms for common items (subscriptions, domains, passports, etc.)
-- **Search & filters** — fuzzy search by name/provider/category/tags, filter by status and category
-- **Statistics** — totals, weekly expiry, spend, and more
-- **Theming** — respects dark/light mode and native Obsidian themes
+> All data is stored as plain Markdown notes with YAML frontmatter. Your data remains yours forever.
 
-## Usage
+---
 
-Open the dashboard from the ribbon icon (calendar-clock) or the command palette.
+## Screenshots
 
-| Command | ID |
-|---|---|
-| Open Expiry Manager dashboard | `open-expiry-dashboard` |
-| New expiry entry | `new-entry` |
-| Renew expiry entry | `renew-entry` |
-| Edit expiry entry | `edit-entry` |
+* Dashboard
+* Timeline View
+* Calendar View
+* New Entry Dialog
+* Renewal Workflow
 
-## Storage
+---
 
-Entries are stored as `.md` files in `Expiry Manager/` (configurable in settings). Each file contains YAML frontmatter:
+# Why use Expiry Manager?
+
+Most reminder apps are built around **events**.
+
+Expiry Manager is built around **things that have a lifecycle**.
+
+Instead of creating recurring reminders, you create an item once and keep its entire renewal history.
+
+Perfect for tracking:
+
+* 🌍 Domains
+* 🔒 SSL certificates
+* 🔑 API keys
+* 💳 Subscriptions
+* 📱 Mobile recharges
+* 🌐 Internet plans
+* 📄 Passports & documents
+* 🚗 Vehicle insurance
+* 📦 Product warranties
+* 🏋️ Memberships
+* 💼 Licences
+* ...or anything else that expires.
+
+---
+
+# Features
+
+## Dashboard
+
+A clean overview of everything that matters.
+
+Each item shows:
+
+* Progress bar
+* Days remaining
+* Expiry date
+* Cost
+* Category
+* Auto-renew status
+* Quick actions
+
+---
+
+## Timeline
+
+View upcoming expiries in chronological order.
+
+Perfect for answering:
+
+> "What's expiring next?"
+
+---
+
+## Calendar
+
+Visual monthly calendar showing all expiry dates.
+
+Great for spotting busy renewal periods.
+
+---
+
+## Smart Renewal
+
+Renew an item with one click.
+
+Instead of overwriting dates, Expiry Manager:
+
+* Archives the previous cycle
+* Creates the next renewal automatically
+* Preserves renewal history
+
+---
+
+## Notifications
+
+Receive Obsidian notifications before an item expires.
+
+Reminder offsets are fully configurable.
+
+Examples:
+
+* 30 days
+* 14 days
+* 7 days
+* 1 day
+* Expiry day
+
+---
+
+## Templates
+
+Quickly create common entries.
+
+Included templates include:
+
+* Subscription
+* Domain
+* SSL Certificate
+* Passport
+* Mobile Recharge
+* Internet Plan
+* Warranty
+* API Key
+* Custom
+
+---
+
+## Search & Filters
+
+Quickly find entries by:
+
+* Name
+* Provider
+* Category
+* Tags
+* Status
+
+---
+
+## Statistics
+
+Track:
+
+* Total active items
+* Expiring this week
+* Expired items
+* Monthly subscription spend
+* Annual subscription spend
+
+---
+
+## Native Obsidian Experience
+
+* Markdown-based storage
+* Dark & light mode
+* Theme friendly
+* Fast search
+* Keyboard shortcuts
+* Command palette integration
+
+---
+
+# Getting Started
+
+## 1. Open the dashboard
+
+Click the ribbon icon or run:
+
+```
+Expiry Manager: Open Dashboard
+```
+
+---
+
+## 2. Create your first item
+
+Click **New Entry** and choose a template.
+
+Fill in:
+
+* Name
+* Category
+* Start date
+* Expiry date
+
+Optionally add:
+
+* Provider
+* Cost
+* Tags
+* Reminder offsets
+* Notes
+
+---
+
+## 3. That's it
+
+Expiry Manager automatically:
+
+* Calculates remaining time
+* Displays progress
+* Organizes upcoming expiries
+* Sends reminders
+* Lets you renew items with one click
+
+---
+
+# Example
 
 ```yaml
 ---
 name: ChatGPT Plus
 category: Subscription
 provider: OpenAI
+
 start: 2026-07-01
 expiry: 2026-08-01
+
 cost: 20
 currency: USD
+
 autoRenew: true
-reminders: [30, 7, 1]
-tags: [ai, productivity]
+
+reminders:
+  - 30
+  - 7
+  - 1
+
+tags:
+  - ai
+  - productivity
 ---
 ```
 
-## Installation
+---
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/sahilium/expiry-manager/releases)
-2. Copy them to `<vault>/.obsidian/plugins/expiry-manager/`
-3. Enable the plugin in **Settings → Community plugins**
+# Commands
 
-### Building from source
+| Command        | Description                        |
+| -------------- | ---------------------------------- |
+| Open Dashboard | Opens the Expiry Manager dashboard |
+| New Entry      | Creates a new expiry item          |
+| Edit Entry     | Edits the selected item            |
+| Renew Entry    | Creates the next renewal period    |
+
+---
+
+# Data Storage
+
+All entries are stored as Markdown files inside:
+
+```
+Expiry Manager/
+```
+
+The storage folder can be changed in plugin settings.
+
+No databases.
+
+No cloud dependency.
+
+No vendor lock-in.
+
+---
+
+# Installation
+
+### Community Plugins
+
+1. Open **Settings → Community Plugins**
+2. Search for **Expiry Manager**
+3. Click **Install**
+4. Enable the plugin
+
+---
+
+### Manual Installation
+
+Download:
+
+* `main.js`
+* `manifest.json`
+* `styles.css`
+
+Copy them into:
+
+```
+<vault>/.obsidian/plugins/expiry-manager/
+```
+
+Enable the plugin from Community Plugins.
+
+---
+
+# Development
 
 ```bash
 git clone https://github.com/sahilium/expiry-manager.git
+
 cd expiry-manager
+
 npm install
+
+npm run dev
+```
+
+Production build:
+
+```bash
 npm run build
 ```
 
-## Development
+---
 
-```bash
-npm run dev    # watch mode
-npm run build  # production build
-npm run lint   # lint source
-```
+# Contributing
 
-## Release
+Bug reports, feature requests, and pull requests are always welcome.
 
-1. Bump `version` in `manifest.json`
-2. Update `versions.json` if needed
-3. `git tag <version> && git push origin <version>`
-4. GitHub Actions creates a draft release — publish it
+If you find Expiry Manager useful, consider starring the repository.
 
-## License
+---
+
+# License
 
 MIT
